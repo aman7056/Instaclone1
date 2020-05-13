@@ -6,16 +6,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Button btn;
     private EditText editText1, editText2, editText3, editText4, editText5;
+
+    private  TextView textView;
+    public String allCricketer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         editText3 = findViewById(R.id.editText3);
         editText4 = findViewById(R.id.editText4);
         editText5 = findViewById(R.id.editText5);
+
+        textView = findViewById(R.id.textView);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +65,31 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e){
                     FancyToast.makeText(MainActivity.this,e.getMessage(),FancyToast.LENGTH_LONG,FancyToast.ERROR,true).show();
                 }
+            }
+        });
+
+
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                allCricketer ="";
+                final ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Cricketer");
+                parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        for (ParseObject parseObject: objects){
+                            allCricketer = allCricketer + parseObject.get("name") + "\n" ;
+                        }
+                        if (e == null){
+                            if ((objects.size())>0){
+                                textView.setText(allCricketer +"\n" );
+                                FancyToast.makeText(MainActivity.this,allCricketer + "\n" ,FancyToast.LENGTH_LONG,FancyToast.SUCCESS,true).show();
+                            }
+                        }
+                    }
+                });
+
             }
         });
 
