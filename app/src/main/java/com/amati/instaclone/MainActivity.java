@@ -2,6 +2,7 @@ package com.amati.instaclone;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,7 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btn;
+    private Button btn , btnsign;
     private EditText editText1, editText2, editText3, editText4, editText5;
 
     private  TextView textView;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         editText3 = findViewById(R.id.editText3);
         editText4 = findViewById(R.id.editText4);
         editText5 = findViewById(R.id.editText5);
+        btnsign = findViewById(R.id.btn_signup);
 
         textView = findViewById(R.id.textView);
 
@@ -93,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        btnsign.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SignUp.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }
