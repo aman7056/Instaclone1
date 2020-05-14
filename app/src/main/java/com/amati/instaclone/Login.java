@@ -80,9 +80,8 @@ public class Login extends AppCompatActivity {
                 if (i == KeyEvent.KEYCODE_ENTER &&  keyEvent.getAction() == KeyEvent.ACTION_DOWN){
 
                 onClick.onClick(btnLogin);
-                gotoHome();
-                }
 
+                }
                 return false;
             }
         });

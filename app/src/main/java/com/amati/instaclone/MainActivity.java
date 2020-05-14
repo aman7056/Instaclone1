@@ -117,9 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 if (i == keyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
 
                     onClickListener.onClick(btnSignUp);
-                    gotoHome();
-                }
 
+                }
                 return false;
             }
         });
