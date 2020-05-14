@@ -34,7 +34,7 @@ public class Login extends AppCompatActivity {
         btnSignupPage = findViewById(R.id.btnSignUpPage);
 
         if (ParseUser.getCurrentUser() != null){
-            ParseUser.getCurrentUser().logOut();
+            gotoHome();
         }
 
         final View.OnClickListener onClick = new View.OnClickListener() {
@@ -53,9 +53,8 @@ public class Login extends AppCompatActivity {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null && e == null) {
                                 FancyToast.makeText(Login.this, "Thanks for Login: " + ParseUser.getCurrentUser().getUsername(), Toast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
-
                                 progressDialog.dismiss();
-
+                                gotoHome();
 
                             } else {
 
@@ -81,6 +80,7 @@ public class Login extends AppCompatActivity {
                 if (i == KeyEvent.KEYCODE_ENTER &&  keyEvent.getAction() == KeyEvent.ACTION_DOWN){
 
                 onClick.onClick(btnLogin);
+                gotoHome();
                 }
 
                 return false;
@@ -104,5 +104,9 @@ public class Login extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+    public void gotoHome()
+    {
+        startActivity(new Intent(Login.this, Home.class));
     }
 }

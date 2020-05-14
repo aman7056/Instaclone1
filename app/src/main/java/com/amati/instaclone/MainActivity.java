@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (ParseUser.getCurrentUser() != null){
-            ParseUser.getCurrentUser().logOut();
+            gotoHome();
         }
 
 
@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
                         FancyToast.makeText(MainActivity.this, "Thanks for signing: " + amati.getUsername(), Toast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
                         progressDialog.dismiss();
+                        gotoHome();
                     } else {
 
                         FancyToast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG, FancyToast.ERROR, true).show();
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 if (i == keyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
 
                     onClickListener.onClick(btnSignUp);
+                    gotoHome();
                 }
 
                 return false;
@@ -132,5 +134,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    public void gotoHome(){
+        startActivity(new Intent(MainActivity.this, Home.class));
     }
 }
