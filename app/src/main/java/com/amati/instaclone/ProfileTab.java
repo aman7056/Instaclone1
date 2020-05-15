@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -24,7 +25,7 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 public class ProfileTab extends Fragment {
 
     private EditText edtName, edtHobby, edtPassion, edtSchool, edtDOB, edtBio;
-    private Button btnUpdate, btnLogout;
+    private Button btnUpdate;
 
     public ProfileTab() {
         // Required empty public constructor
@@ -45,89 +46,79 @@ public class ProfileTab extends Fragment {
         edtDOB = view.findViewById(R.id.edtDOB);
 
         btnUpdate = view.findViewById(R.id.btnUpdate);
-        btnLogout = view.findViewById(R.id.btnLogOut)
 
-       final ParseUser parseUser = ParseUser.getCurrentUser();
 
-       if (parseUser.get("nickName") == null){
-           edtName.setText("");
-       }else {
-           edtName.setText(parseUser.get("nickName").toString());
-       }
+        final ParseUser parseUser = ParseUser.getCurrentUser();
 
-        if (parseUser.get("bio") == null){
+        if (parseUser.get("nickName") == null) {
+            edtName.setText("");
+        } else {
+            edtName.setText(parseUser.get("nickName").toString());
+        }
+
+        if (parseUser.get("bio") == null) {
             edtBio.setText("");
-        }else {
-            edtBio.setText(parseUser.get("bio") + "" );
+        } else {
+            edtBio.setText(parseUser.get("bio") + "");
         }
 
-        if (parseUser.get("school") == null){
+        if (parseUser.get("school") == null) {
             edtSchool.setText("");
-        }else {
-            edtSchool.setText(parseUser.get("school") + "" );
+        } else {
+            edtSchool.setText(parseUser.get("school") + "");
         }
 
-        if (parseUser.get("hobby") == null){
+        if (parseUser.get("hobby") == null) {
             edtHobby.setText("");
-        }else {
-            edtHobby.setText(parseUser.get("hobby") + "" );
+        } else {
+            edtHobby.setText(parseUser.get("hobby") + "");
         }
 
-        if (parseUser.get("passion") == null){
+        if (parseUser.get("passion") == null) {
             edtPassion.setText("");
-        }else {
-            edtPassion.setText(parseUser.get("passion") + "" );
+        } else {
+            edtPassion.setText(parseUser.get("passion") + "");
         }
 
-        if (parseUser.get("dob") == null){
+        if (parseUser.get("dob") == null) {
             edtDOB.setText("");
-        }else {
-            edtDOB.setText(parseUser.get("dob") + "" );
+        } else {
+            edtDOB.setText(parseUser.get("dob") + "");
         }
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ParseUser.logOut();
-                finish();
+
+                parseUser.put("nickName", edtName.getText().toString());
+                parseUser.put("bio", edtBio.getText().toString());
+                parseUser.put("school", edtSchool.getText().toString());
+                parseUser.put("hobby", edtHobby.getText().toString());
+                parseUser.put("passion", edtPassion.getText().toString());
+                parseUser.put("dob", edtDOB.getText().toString());
+
+                final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                progressDialog.setMessage("Please Wait Saving Your details");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                parseUser.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            FancyToast.makeText(getContext(), "Info Updated", Toast.LENGTH_LONG, FancyToast.INFO, true).show();
+                            progressDialog.dismiss();
+                        } else {
+                            FancyToast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG, FancyToast.ERROR, true).show();
+                            progressDialog.dismiss();
+                        }
+                    }
+                });
+
+
             }
         });
-
-
-       btnUpdate.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-
-               parseUser.put("nickName", edtName.getText().toString());
-               parseUser.put("bio", edtBio.getText().toString());
-               parseUser.put("school", edtSchool.getText().toString());
-               parseUser.put("hobby", edtHobby.getText().toString());
-               parseUser.put("passion", edtPassion.getText().toString());
-               parseUser.put("dob", edtDOB.getText().toString());
-
-               final ProgressDialog progressDialog = new ProgressDialog(getContext());
-               progressDialog.setMessage("Please Wait We Logged you in");
-               progressDialog.setCancelable(false);
-               progressDialog.show();
-
-               parseUser.saveInBackground(new SaveCallback() {
-                   @Override
-                   public void done(ParseException e) {
-                       if (e == null){
-                           FancyToast.makeText(getContext(), "Info Updated", Toast.LENGTH_LONG, FancyToast.INFO, true).show();
-                           progressDialog.dismiss();
-                       }else {
-                           FancyToast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG, FancyToast.ERROR, true).show();
-                           progressDialog.dismiss();
-                       }
-                   }
-               });
-
-
-           }
-       });
-
-
-        return view;
-    }
+   return view;
+}
 }

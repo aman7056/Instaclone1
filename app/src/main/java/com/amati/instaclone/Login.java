@@ -107,5 +107,6 @@ public class Login extends AppCompatActivity {
     public void gotoHome()
     {
         startActivity(new Intent(Login.this, Home.class));
+        finish();
     }
 }

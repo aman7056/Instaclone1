@@ -137,5 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void gotoHome(){
         startActivity(new Intent(MainActivity.this, Home.class));
+        finish();
     }
 }
