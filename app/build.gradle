@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.github.Shashank02051997:FancyToast-Android:0.1.6'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.android.support:design:+'
+    implementation 'com.github.mjn1369:prettydialog:1.0.4'
 
 
 }

@@ -1,12 +1,15 @@
 package com.amati.instaclone;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -28,7 +31,11 @@ import java.util.List;
 public class UserPosts extends AppCompatActivity {
 
     private LinearLayout linearLayout;
+    private Toolbar mToolbar;
+    private TextView txtTag;
+//    private ImageView imgPosts;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,10 +43,11 @@ public class UserPosts extends AppCompatActivity {
 
         linearLayout = findViewById(R.id.linearLayout);
 
+        mToolbar = findViewById(R.id.myToolbar);
+        setSupportActionBar(mToolbar);
+
         Intent receivedIntentObject = getIntent();
         final String receivedUserName = receivedIntentObject.getStringExtra("username");
-        FancyToast.makeText(this, receivedUserName, Toast.LENGTH_SHORT, FancyToast.SUCCESS, true).show();
-
         setTitle(receivedUserName + "'s posts");
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Photo");
@@ -71,17 +79,17 @@ public class UserPosts extends AppCompatActivity {
                                     LinearLayout.LayoutParams imageView_params =
                                             new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                                    imageView_params.setMargins(5, 5, 5, 5);
+                                    imageView_params.setMargins(5, 0, 5, 3);
                                     postImageView.setLayoutParams(imageView_params);
                                     postImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                    postImageView.setImageBitmap(bitmap);
+                                    postImageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 1080,960,false));
 
                                     LinearLayout.LayoutParams des_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                     des_params.setMargins(5, 5, 5, 15);
                                     postDescription.setLayoutParams(des_params);
-                                    postDescription.setGravity(Gravity.CENTER);
+                                    postDescription.setGravity(Gravity.LEFT);
                                     postDescription.setTextColor(Color.BLACK);
-                                    postDescription.setTextSize(30f);
+                                    postDescription.setTextSize(24f);
 
                                     linearLayout.addView(postImageView);
                                     linearLayout.addView(postDescription);

@@ -63,35 +63,10 @@ public class PicturesTab extends Fragment implements View.OnClickListener  {
         btnShareImage = view.findViewById(R.id.btnShareImage);
 
         imgShare.setOnClickListener(PicturesTab.this);
-        btnShareImage.setOnClickListener(PicturesTab.this);
 
-        return view;
-
-    }
-    @Override
-    public void onClick(View view) {
-
-        switch (view.getId()) {
-
-            case R.id.imgShare:
-
-                if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                        ActivityCompat.checkSelfPermission(getContext(),
-                                Manifest.permission.READ_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) {
-
-                    requestPermissions(new String[]
-                                    {Manifest.permission.READ_EXTERNAL_STORAGE},
-                            1000);
-
-                } else {
-
-                    getChosenImage();
-
-                }
-
-                break;
-            case R.id.btnShareImage:
+        btnShareImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
                 if (receivedImageBitmap != null) {
 
@@ -133,11 +108,37 @@ public class PicturesTab extends Fragment implements View.OnClickListener  {
                     FancyToast.makeText(getContext(), "Error: You must select an image."  , Toast.LENGTH_SHORT, FancyToast.ERROR, true).show();
 
                 }
+            }
+        });
+
+        return view;
+
+    }
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+
+            case R.id.imgShare:
+
+                if (android.os.Build.VERSION.SDK_INT >= 23 &&
+                        ActivityCompat.checkSelfPermission(getContext(),
+                                Manifest.permission.READ_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+
+                    requestPermissions(new String[]
+                                    {Manifest.permission.READ_EXTERNAL_STORAGE},
+                            1000);
+
+                } else {
+
+                    getChosenImage();
+
+                }
 
                 break;
 
         }
-
     }
 
     private void getChosenImage() {
