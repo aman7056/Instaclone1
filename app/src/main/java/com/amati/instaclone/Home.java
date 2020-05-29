@@ -89,6 +89,9 @@ public class Home extends AppCompatActivity {
 
             }
 
+        }else if (item.getItemId() == R.id.twitter){
+            startActivity(new Intent(Home.this, TwitterPage.class));
+            finish();
         }
 
 

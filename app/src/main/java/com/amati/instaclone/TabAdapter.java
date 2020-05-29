@@ -17,12 +17,11 @@ public class TabAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
-                ProfileTab profileTab = new ProfileTab();
-                return profileTab;
+               return new PicturesTab();
             case 1:
                 return new UserTab();
             case 2:
-                return new PicturesTab();
+                return new ProfileTab();
             default:
                 return null;
         }
@@ -38,11 +37,11 @@ public class TabAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position){
             case 0:
-                return "Profile";
+                return "Posts";
             case 1:
                 return "User";
             case 2:
-                return "Pictures";
+                return "Profile";
             default:
                 return null;
         }

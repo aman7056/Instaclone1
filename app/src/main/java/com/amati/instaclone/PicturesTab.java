@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -16,34 +17,39 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PicturesTab extends Fragment implements View.OnClickListener  {
+public class PicturesTab extends Fragment  {
 
-    private ImageView imgShare;
-    private EditText edtDescription;
-    private Button btnShareImage;
 
     Bitmap receivedImageBitmap;
+    private LinearLayout linearLayout;
 
 
     public PicturesTab() {
@@ -58,145 +64,58 @@ public class PicturesTab extends Fragment implements View.OnClickListener  {
         View view = inflater.inflate(R.layout.fragment_pictures_tab,
                 container, false);
 
-        imgShare = view.findViewById(R.id.imgShare);
-        edtDescription = view.findViewById(R.id.edtDescription);
-        btnShareImage = view.findViewById(R.id.btnShareImage);
+        linearLayout = view.findViewById(R.id.linearLayout1);
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Photo");
+        parseQuery.orderByDescending("createdAt");
 
-        imgShare.setOnClickListener(PicturesTab.this);
-
-        btnShareImage.setOnClickListener(new View.OnClickListener() {
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void onClick(View view) {
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (objects.size() > 0 && e == null) {
 
-                if (receivedImageBitmap != null) {
+                    for (ParseObject post : objects) {
 
-                    if (edtDescription.getText().toString().equals("")) {
-                        FancyToast.makeText(getContext(), "Error: You must specify a description."  , Toast.LENGTH_SHORT, FancyToast.ERROR, true).show();
-
-
-                    } else {
-
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        receivedImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                        byte[] bytes = byteArrayOutputStream.toByteArray();
-                        ParseFile parseFile = new ParseFile("img.png", bytes);
-                        ParseObject parseObject = new ParseObject("Photo");
-                        parseObject.put("picture", parseFile);
-                        parseObject.put("image_des", edtDescription.getText().toString());
-                        parseObject.put("username", ParseUser.getCurrentUser().getUsername());
-                        final ProgressDialog dialog = new ProgressDialog(getContext());
-                        dialog.setMessage("Loading...");
-                        dialog.setCancelable(false);
-                        dialog.show();
-                        parseObject.saveInBackground(new SaveCallback() {
+                        final TextView postDescription = new TextView(getContext());
+                        postDescription.setText(post.get("image_des") + "");
+                        ParseFile postPicture = (ParseFile) post.get("picture");
+                        postPicture.getDataInBackground(new GetDataCallback() {
                             @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    FancyToast.makeText(getContext(), "Done!!!", Toast.LENGTH_SHORT, FancyToast.SUCCESS, true).show();
-                                } else {
-                                    FancyToast.makeText(getContext(), "Unknown error: " + e.getMessage(), Toast.LENGTH_SHORT, FancyToast.ERROR, true).show();
+                            public void done(byte[] data, ParseException e) {
+
+                                if (data != null && e == null) {
+
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                    ImageView postImageView = new ImageView(getContext());
+                                    LinearLayout.LayoutParams imageView_params =
+                                            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    imageView_params.setMargins(5, 0, 5, 3);
+                                    postImageView.setLayoutParams(imageView_params);
+                                    postImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                    postImageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 1080, 960, false));
+
+                                    LinearLayout.LayoutParams des_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    des_params.setMargins(5, 5, 5, 15);
+                                    postDescription.setLayoutParams(des_params);
+                                    postDescription.setGravity(Gravity.LEFT);
+                                    postDescription.setTextColor(Color.BLACK);
+                                    postDescription.setTextSize(24f);
+
+                                    linearLayout.addView(postImageView);
+                                    linearLayout.addView(postDescription);
+
                                 }
-                                dialog.dismiss();
+
                             }
                         });
 
-
                     }
 
-                } else {
-
-                    FancyToast.makeText(getContext(), "Error: You must select an image."  , Toast.LENGTH_SHORT, FancyToast.ERROR, true).show();
-
+                    }
                 }
-            }
-        });
 
+
+        } );
         return view;
-
     }
-    @Override
-    public void onClick(View view) {
-
-        switch (view.getId()) {
-
-            case R.id.imgShare:
-
-                if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                        ActivityCompat.checkSelfPermission(getContext(),
-                                Manifest.permission.READ_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) {
-
-                    requestPermissions(new String[]
-                                    {Manifest.permission.READ_EXTERNAL_STORAGE},
-                            1000);
-
-                } else {
-
-                    getChosenImage();
-
-                }
-
-                break;
-
-        }
-    }
-
-    private void getChosenImage() {
-
-        // FancyToast.makeText(getContext(), "Now we can access the images", Toast.LENGTH_SHORT, FancyToast.SUCCESS, true).show();
-
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, 2000);
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == 1000) {
-
-            if (grantResults.length > 0 && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED) {
-
-                getChosenImage();
-
-            }
-        }
-
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (requestCode == 2000) {
-
-            if (resultCode == Activity.RESULT_OK) {
-
-                //Do something with your captured image.
-                try {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                    Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                            filePathColumn, null, null, null);
-                    cursor.moveToFirst();
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
-                    cursor.close();
-                    receivedImageBitmap = BitmapFactory.decodeFile(picturePath);
-
-                    imgShare.setImageBitmap(receivedImageBitmap);
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
-
-            }
-        }
-}
 }
