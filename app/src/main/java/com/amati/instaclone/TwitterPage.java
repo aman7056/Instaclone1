@@ -138,6 +138,7 @@ try {
 
                 break;
             case R.id.viewTweet:
+                startActivity(new Intent(TwitterPage.this,ViewTweets.class));
                 break;
 
         }

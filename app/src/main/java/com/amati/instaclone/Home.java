@@ -92,6 +92,8 @@ public class Home extends AppCompatActivity {
         }else if (item.getItemId() == R.id.twitter){
             startActivity(new Intent(Home.this, TwitterPage.class));
             finish();
+        }else if (item.getItemId() == R.id.chats){
+            startActivity(new Intent(Home.this,whatsapp.class));
         }
 
 
